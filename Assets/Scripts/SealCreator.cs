@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SealCreator : MonoBehaviour {
 
-    public float timeRemaining = 10;
+    public float timeRemaining = 200;
     public bool timerIsRunning = false;
     public SealHackingBoard Board { get; set; }
     public BoardConfigSettings.ConfigTypes ConfigType { get; set; }
@@ -23,23 +23,23 @@ public class SealCreator : MonoBehaviour {
         
         Debug.Log(string.Format("In Awake - Board.GeneratedBoard.Board[0].SealPieces[0].SealPiece.GetNeighbors().Length: {0}", Board.GeneratedBoard.Board[0].SealPieces[0].SealPiece.GetNeighbors().Length.ToString()));
         Debug.Log(string.Format("In Awake - Board.GeneratedBoard.Board[0].SealPieces[0].SealPiece.NeighborValidation(0)[1]: {0}", Board.GeneratedBoard.Board[0].SealPieces[0].SealPiece.NeighborValidation(0)[1].ToString()));
-        Debug.Log(string.Format("In Awake - generatedPlayPiece.ActivePieces[1]: [{0},{1}] ", CurrentPiece.ActivePieces[1][0], CurrentPiece.ActivePieces[1][1]));
+        // Debug.Log(string.Format("In Awake - generatedPlayPiece.ActivePieces[1]: [{0},{1}] ", CurrentPiece.ActivePieces[1][0], CurrentPiece.ActivePieces[1][1]));
 
     }
 
     void Update(){
 
         if (timerIsRunning) {
-
             TimerGameRunning();
-
         }
               
     }
 
     public void TimerGameRunning(){
 
-        if (timeRemaining > 0 && GameRunning == true)
+        GameRunning = true;
+
+        if (timeRemaining > 0)
         {
             InPlay();
             timeRemaining -= Time.deltaTime;
@@ -61,7 +61,7 @@ public class SealCreator : MonoBehaviour {
         while (!Board.Full)
         {
             CurrentPiece = CreateSealPiece(SealPieceConfig);
-            Board = GenerateSealRandomizer.FallingToSettled(CurrentPiece, Board);
+            Board = CurrentPiece.FallingToSettled(CurrentPiece, Board);
 
         }
 
