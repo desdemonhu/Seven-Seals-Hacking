@@ -37,6 +37,25 @@ public class SealCreator : MonoBehaviour {
               
     }
 
+    public void TimerGameRunning(){
+
+        if (timeRemaining > 0 && GameRunning == true)
+        {
+            InPlay();
+            timeRemaining -= Time.deltaTime;
+        }
+        else
+        {
+            timeRemaining = 0;
+            GameRunning = false;
+            
+            Debug.Log(string.Format("in TimerGameRunning - Time has run out according to GameRunning: {0}", GameRunning));
+
+            timerIsRunning = false;
+        }
+    }
+
+
     public void InPlay(){
 
         while (!Board.Full)
@@ -50,21 +69,6 @@ public class SealCreator : MonoBehaviour {
         Debug.Log(string.Format("in InPlay - Board is filled! Time Remaining: {0}", Mathf.FloorToInt(timeRemaining % 60))); 
     }
 
-    public void TimerGameRunning(){
-
-        if (timeRemaining > 0 && GameRunning == true)
-        {
-            InPlay();
-            timeRemaining -= Time.deltaTime;
-        }
-        else
-        {
-            Debug.Log("Time has run out!");
-            timeRemaining = 0;
-            GameRunning = false;
-            timerIsRunning = false;
-        }
-    }
 
     public GenerateSealRandomizer CreateSealPiece(BoardConfigSettings.ConfigTypes type){
 
