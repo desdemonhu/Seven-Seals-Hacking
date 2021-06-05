@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class SealCreator : MonoBehaviour {
 
-    public float timeRemaining = 200;
+    public float timeRemaining = 15;
     public bool timerIsRunning = false;
     public SealHackingBoard Board { get; set; }
     public BoardConfigSettings.ConfigTypes ConfigType { get; set; }
@@ -62,7 +62,6 @@ public class SealCreator : MonoBehaviour {
         {
             CurrentPiece = CreateSealPiece(SealPieceConfig);
             Board = CurrentPiece.FallingToSettled(CurrentPiece, Board);
-
         }
 
         GameRunning = false;
@@ -94,10 +93,18 @@ public class SealHackingBoard
     } 
 
     public CurrentSealBoard GenerateBoard(BoardConfigSettings settings) {
-        
+                
         CurrentSealBoard newBoard = new CurrentSealBoard(settings);
-        
-        newBoard = newBoard.AddNeighborsToBoard(newBoard);
+    
+        if (settings.BoardType != BoardConfigSettings.ConfigTypes.SealPiece_Custom || settings.BoardType != BoardConfigSettings.ConfigTypes.SealPiece_Custom) {
+            
+            newBoard = newBoard.AddNeighborsToBoard(newBoard);
+        }
+
+        for (int index = 0; index < newBoard.NumOfRows; index++) {
+
+            CurrentSealRow row = newBoard.Board[index];
+        }
         
         return newBoard;
     }
@@ -112,7 +119,6 @@ public class SealHackingBoard
 }
 
 
-
 public class BoardConfigSettings
 {
     private static int[] boardDefault = new int[] {25, 12};
@@ -122,11 +128,13 @@ public class BoardConfigSettings
 
     public int BlocksPerRow { get ; set ; }
     public int NumRows { get ; set; }
+    public ConfigTypes BoardType { get; set; }
 
-    public BoardConfigSettings(int[] settings)
+    public BoardConfigSettings(int[] settings, ConfigTypes type)
     {
         NumRows = settings[0];
         BlocksPerRow = settings[1];
+        BoardType = type;
     }
 
     public enum ConfigTypes {
@@ -141,19 +149,19 @@ public class BoardConfigSettings
 
         return type switch {
 
-            ConfigTypes.Board_Default => RetrieveConfigSettings(boardDefault),
-            ConfigTypes.Board_Custom => RetrieveConfigSettings(boardCustom),
-            ConfigTypes.SealPiece_Default => RetrieveConfigSettings(sealPieceDefault),
-            ConfigTypes.SealPiece_Custom => RetrieveConfigSettings(sealPieceCustom),
-            ConfigTypes.None => RetrieveConfigSettings(boardDefault),
-            _ => RetrieveConfigSettings(boardDefault)
+            ConfigTypes.Board_Default => RetrieveConfigSettings(boardDefault, type),
+            ConfigTypes.Board_Custom => RetrieveConfigSettings(boardCustom, type),
+            ConfigTypes.SealPiece_Default => RetrieveConfigSettings(sealPieceDefault, type),
+            ConfigTypes.SealPiece_Custom => RetrieveConfigSettings(sealPieceCustom, type),
+            ConfigTypes.None => RetrieveConfigSettings(boardDefault, type),
+            _ => RetrieveConfigSettings(boardDefault, type)
 
         };
     }
 
 
-    private static BoardConfigSettings RetrieveConfigSettings(int[] settings) {
+    private static BoardConfigSettings RetrieveConfigSettings(int[] settings, ConfigTypes type) {
 
-        return new BoardConfigSettings(settings);
+        return new BoardConfigSettings(settings, type);
     }
 }

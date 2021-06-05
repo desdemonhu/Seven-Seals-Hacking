@@ -166,7 +166,7 @@ public class SealPiece : ISealPiece
     }
 
     public SealPiece MarkBoardPiece(SealPiece sealPiece){
-        sealPiece.Active = !(sealPiece.Active);
+        sealPiece.Active = true;
         return sealPiece;
     }
 
@@ -236,8 +236,8 @@ public class GenerateSealRandomizer : GenerateSealPiece
                 SealPiece sealPiece = row.SealPieces[block].SealPiece;
 
                 if(sealPiece.Active == true){
-
-                    activePieces.Add(new int[]{sealPiece.X , sealPiece.Y});
+                    int[] newPiece = new int[]{sealPiece.X , sealPiece.Y};
+                    activePieces.Add(newPiece);
                 }
             }
 
@@ -269,23 +269,31 @@ public class GenerateSealRandomizer : GenerateSealPiece
     public SealHackingBoard FallingToSettled(GenerateSealRandomizer currentPiece, SealHackingBoard board){
 
         CurrentSealRow[] rows = board.GeneratedBoard.Board;
+        Debug.Log(string.Format("In FallingToSettled - rows.Length: {0}", rows.Length));
+
 
         ///TODO: Take into account piece repositioning during fall
         ///Change coords of active pieces to new depth
-        for(int i = rows.Length -1 ; i > -1 ; i--)
+        for(int i = rows.Length -1; i > -1 ; i--)
         {
             CurrentSealRow currentRow = rows[i];
-            Debug.Log(string.Format("In FallingToSettled - currentRow{0}.ActivePieces.Length: {1}", currentRow.CurrentRow, currentRow.ActivePieces.Length)); ///TODO: NullReferenceException: Object reference not set to an instance of an object - 2590 times
+            currentRow.ActivePieces = currentRow.CheckForActivePiecesInRow(currentRow.SealPieces);
 
-            if(currentRow.ActivePieces.Length > 0){
+            Debug.Log(string.Format("In FallingToSettled - currentRow{0}", currentRow.CurrentRow)); ///Only does row 24 repeatedly 
 
+            if (currentRow.ActivePieces.GetType() == null) {  ///TODO: NullReferenceException: Object reference not set to an instance of an object -- Lots of times
+
+                continue;
+
+            } else {
+                
                 int[][] currentRowActivePieces = currentRow.ActivePieces;
                 int[][] fallingActivePieces = currentPiece.ActivePieces;
 
                for (int index = 0; index < fallingActivePieces.Length; index++){
 
                    int[] currentPieceCoords = fallingActivePieces[index];
-                   Debug.Log(string.Format("In FallingToSettled - currentPieceCoords: [{0},{1}]", currentPieceCoords[0], currentPieceCoords[1]));
+                   Debug.Log(string.Format("In FallingToSettled - currentPieceCoords: [{0},{1}]", currentPieceCoords[0], currentPieceCoords[1])); ///Not getting here
 
                    ///Look in Row active pieces to see if there are any collisions with the currentPieceCoords
                    if (ActivePiecesContains(currentRowActivePieces, currentPieceCoords)){
@@ -294,7 +302,7 @@ public class GenerateSealRandomizer : GenerateSealPiece
                        int currentPieceRow = currentPieceCoords[0] + 1;
                        currentPieceCoords[0] = currentPieceRow < board.BoardSettings.NumRows ? currentPieceRow : -1;
 
-                       if (currentPieceCoords[0] > -1 ){
+                       if (currentPieceCoords[0] > -1 ) {
 
                            rows[currentPieceCoords[0]].ActivePieces[index] = currentPieceCoords;
 

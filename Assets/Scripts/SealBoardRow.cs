@@ -57,7 +57,6 @@ public class CurrentSealBoard {
         }
 
         return board.ToArray();
-
     }
 
     public CurrentSealBoard AddNeighborsToBoard(CurrentSealBoard board)
@@ -131,7 +130,7 @@ public class CurrentSealRow
 
         }
 
-        return activePieces.ToArray();
+        return activePieces.Count > 0 ? activePieces.ToArray() : null;
     }
 
 
